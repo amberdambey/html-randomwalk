@@ -1,0 +1,105 @@
+<body style="border:0;margin:0;padding:0;background-color:black;">
+<canvas id="can" width=160 height=90 style="height:100%;position:relative;left:50%;transform:translate(-50%, 0);image-rendering:pixelated;background:black;cursor:none;" oncontextmenu="refresh=true;return false;">
+	
+</canvas>
+<script>
+	var hideTimer=1.0;
+	var refresh=false;
+	var refreshA=false;
+	
+	var dWidth=160;
+	var dHeight=90;
+	
+	var x=dWidth/2;
+	var y=dHeight/2;
+	var tabl=Array(Array(0,0,0,0));
+	tabl.length=dWidth;
+	
+	var rSub=0;
+	var gSub=256;
+	var bSub=512;
+	for (var i=0; i<tabl.length; i++) {
+		tabl[i]=Array(0,0,0,0);
+		tabl[i].length=dHeight;
+		for (var iv=0; iv<tabl[i].length; iv++) {
+			tabl[i][iv]=0;
+		}
+		if (Math.random()<0.1) {
+			var g=rSub;
+			rSub=bSub;
+			bSub=g;
+		}
+		if (Math.random()<0.1) {
+			var g=rSub;
+			rSub=gSub;
+			gSub=g;
+		}
+		if (Math.random()<0.1) {
+			var g=bSub;
+			bSub=gSub;
+			gSub=g;
+		}
+	}
+	
+	function ren() {
+		if (refreshA) {
+			setTimeout(refreshNow, 50);
+			refreshA=false;
+		}
+		for (var repeat=0; repeat<16; repeat++) {
+			if (Math.random()<.5) {
+				if (Math.random()<.5) {
+					x++;
+				} else {
+					x--;
+				}
+			} else {
+				if (Math.random()<.5) {
+					y++;
+				} else {
+					y--;
+				}
+			}
+			if (true) {
+				if (x<0) x=dWidth-1;
+				if (y<0) y=dHeight-1;
+				if (x>=dWidth) x=0;
+				if (y>=dHeight) y=0;
+			} else {
+				if (x<0) x++;
+				if (y<0) y++;
+				if (x>=dWidth) x--;
+				if (y>=dHeight) y--;
+			}
+			tabl[x][y]+=Math.floor(Math.random()*3)+1;
+			if (tabl[x][y]>96) refresh=true;
+			
+			
+			var ct=can.getContext("2d");
+			ct.fillStyle="rgb("+((tabl[x][y]*16)-rSub)+","+((tabl[x][y]*16)-gSub)+","+((tabl[x][y]*16)-bSub)+")";
+			ct.fillRect(x, y, 1, 1);
+		}
+		
+		
+		hideTimer-=0.01;
+		if (hideTimer<=0 || refresh) {
+			can.style.cursor="none";
+			hideTimer=-5.0;
+			if (refresh) {
+				refreshA=true;
+				refresh=false;
+			}
+		}
+		setTimeout(ren, 2);
+	}
+	setTimeout(ren, 100);
+
+	function refreshNow() {
+		document.location.reload();
+	}
+
+	onmousemove=function() {
+		can.style.cursor="";
+		if (!refresh) hideTimer=1.0;
+	}
+</script>
